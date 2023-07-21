@@ -5,116 +5,148 @@ email: jan.prochazka92@gmail.com
 discord: .honzikovacesta
 """
 
-#pozdrav uzivatele
+#FUNCTION- checking if player won
+def check_winning_combination(winning_positions, selected_positions, grid_size):
+    for positions in winning_positions:
+        is_inside = 0
+        for pos in positions:
+            if pos in selected_positions:
+                is_inside += 1
+                if is_inside == grid_size:
+                    return True
+    return False
 
-#pravidla hry
+#FUNCTION- print gaming grid
+def print_gaming_grid(gaming_grid):
+    grid_size = len(gaming_grid)
+    grid_line = "+---" * grid_size + "+"
 
-#hrací plocha
+    print(grid_line)
+    for row in gaming_grid:
+        print("|" + "|".join(f"{number:^3}" for number in row) + "|")
+        print(grid_line)
 
-#tah hrace 1, upozorní pokud táhn
-#Pokud hráč zadá jiné číslo, než je nabídka hracího pole, program jej upozorní.
-#Pokud hráč zadá jiný vstup, než číselný, program jej opět upozorní.
-#Pokud se na vybraném poli nachází hrací kámen druhého hráče, program jej upozorní, že je pole obsazené
 
+#gaming grid of chosen size 3x3, 4x4 etc
+grid_size = 3
+gaming_grid = []
+i = 0
+for n in range(grid_size):
+    gaming_grid.append([j+i for j in range(grid_size)])
+    i += grid_size
+
+#define list of winning positions for checking if one or another player has won    
+winning_positions = []
+#rows and columns
+for i in range(grid_size): 
+    winning_positions.append(list(gaming_grid[i]))  #create a copy of the row so it wont be changed with gaming_grid list
+    winning_positions.append([gaming_grid[j][i] for j in range(grid_size)])
+#diagonals
+winning_positions.append([gaming_grid[i][i] for i in range(grid_size)]) 
+winning_positions.append([gaming_grid[i][grid_size - 1 - i] for i in range(grid_size)])
+
+#welcome player and print game info
 line = '========================================'
-print('Welcome to Tic Tac Toe!')
-print(line)
-print('''   
-            GAME RULES:
-            Each player can place one mark (or stone)
-            per turn on the 3x3 grid. The WINNER is
-            who succeeds in placing three of their
-            marks in a:
+game_info = f'''   
+GAME RULES:
+Each player can place one mark (or stone)
+per turn on the {grid_size}x{grid_size} grid. The WINNER is
+who succeeds in placing {grid_size} of their
+marks in a:
             * horizontal,
             * vertical or
-            * diagonal row      ''')
+            * diagonal row
+'''
+print('Welcome to Tic Tac Toe!'.center(len(line)))
 print(line)
-print('Let\'s start the game')
+print(game_info)
+print(line)
+print("Press Enter to start the game...")
+input()
 
+#printing gaming grid using function
+print_gaming_grid_use = print_gaming_grid(gaming_grid)
 
-position = [n for n in range(9)]
-grid_line = '+---+---+---+'
+#empty lists and variables
+placed_x = []
+placed_o = []
+blocked_positions = []
+max_value = grid_size**2
+draw = 0
 
+while True:
 
-#3x3 grid napsat ve for cyklu?
-print(grid_line)
-print(f'|{position[0]:^{3}}|{position[1]:^{3}}|{position[2]:^{3}}|')
-print(grid_line)
-print(f'|{position[3]:^{3}}|{position[4]:^{3}}|{position[5]:^{3}}|')
-print(grid_line)
-print(f'|{position[6]:^{3}}|{position[7]:^{3}}|{position[8]:^{3}}|')
-print(grid_line)
-
-vyherni_pozice = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
-kontrola_x = []
-kontrola_o = []
-obsazena_pozice = []
-n=True
-while n:
-
-    #HRAC - x -
+    #PLAYER - x -
     while True:   
         try:
             mark_x = int(input('Player X turn, choose position with number: '))
-            if mark_x in obsazena_pozice:
-                print('tato pozice je obsazena')
+            if mark_x in blocked_positions:
+                print('blocked position, try again')
+            elif mark_x < 0:
+                print('negative value, try again')
+            elif mark_x > max_value - 1:
+                print('number out of interval, try again')
             else:
-                obsazena_pozice.append(mark_x)
-                kontrola_x.append(mark_x)
-                position[mark_x] = 'x'
+                blocked_positions.append(mark_x)
+                placed_x.append(mark_x)
+                draw += 1
+                for row in gaming_grid:
+                    if mark_x in row:
+                        index = row.index(mark_x)
+                        row[index] = 'x'
                 break
         except ValueError:
-            print('spatna hodnota')
-        
-
+            print('wrong value, try again')  
     
+    #print updated grid
+    print_gaming_grid_use = print_gaming_grid(gaming_grid)
     
-
-    #grid
-    print(grid_line)
-    print(f'|{position[0]:^{3}}|{position[1]:^{3}}|{position[2]:^{3}}|')
-    print(grid_line)
-    print(f'|{position[3]:^{3}}|{position[4]:^{3}}|{position[5]:^{3}}|')
-    print(grid_line)
-    print(f'|{position[6]:^{3}}|{position[7]:^{3}}|{position[8]:^{3}}|')
-    print(grid_line)
+    is_winning_combination = check_winning_combination(winning_positions, placed_x, grid_size)
     
-    #vyherni pozice = 0 1 2, 3 4 5, 6 7 8, 0 3 6, 1 4 7, 2 5 8, 0 4 8, 2 4 6
-    if kontrola_x in vyherni_pozice:
+    if draw == max_value:
+        print('Draw!')
+        break
+    if is_winning_combination:
         print('X is the winner!')
-        n=False
-    
-    print(obsazena_pozice)
-    print(kontrola_x)
+        break
+   
+    #print(f'pos blocked {blocked_positions}')
+    #print(f'blocked by player x {placed_x}')
+    #print(f'winning pos {winning_positions}')
 
-    #HRAC - o -
-    
+    #PLAYER - o -
     while True:   
         try:
             mark_o = int(input('Player O turn, choose position with number: '))
-            if mark_o in obsazena_pozice:
-                print('tato pozice je obsazena')
+            if mark_o in blocked_positions:
+                print('blocked position, try again')
+            elif mark_o < 0:
+                print('negative value, try again')
+            elif mark_o > max_value - 1:
+                print('number out of interval, try again')
             else:
-                obsazena_pozice.append(mark_o)
-                kontrola_o.append(mark_o)
-                position[mark_o] = 'o'
+                blocked_positions.append(mark_o)
+                placed_o.append(mark_o)
+                draw += 1
+                for row in gaming_grid:
+                    if mark_o in row:
+                        index = row.index(mark_o)
+                        row[index] = 'o'
                 break
         except ValueError:
-            print('spatna hodnota')
+            print('wrong value, try again')
+ 
+    #print updated grid
+    print_gaming_grid_use = print_gaming_grid(gaming_grid)
     
-    #grid
-    print(grid_line)
-    print(f'|{position[0]:^{3}}|{position[1]:^{3}}|{position[2]:^{3}}|')
-    print(grid_line)
-    print(f'|{position[3]:^{3}}|{position[4]:^{3}}|{position[5]:^{3}}|')
-    print(grid_line)
-    print(f'|{position[6]:^{3}}|{position[7]:^{3}}|{position[8]:^{3}}|')
-    print(grid_line)
-    
-    #vyherni pozice = 0 1 2, 3 4 5, 6 7 8, 0 3 6, 1 4 7, 2 5 8, 0 4 8, 2 4 6   
-    if kontrola_o in vyherni_pozice:
+    is_winning_combination = check_winning_combination(winning_positions, placed_o, grid_size)
+    if draw == max_value:
+        print('Draw!')
+        break
+    if is_winning_combination:
         print('O is the winner!')
-        n=False
+        break
     
-    print(obsazena_pozice)
-    print(kontrola_o)
+    #print(f'pos blocked {blocked_positions}')
+    #print(f'blocked by player o {placed_o}')
+    #print(f'winning pos {winning_positions}')
