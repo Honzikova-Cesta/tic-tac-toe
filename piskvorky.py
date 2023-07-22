@@ -37,11 +37,13 @@ for n in range(grid_size):
 
 #define list of winning positions for checking if one or another player has won    
 winning_positions = []
-#rows and columns
+
+#define winning positions for rows and columns
 for i in range(grid_size): 
     winning_positions.append(list(gaming_grid[i]))  #create a copy of the row so it wont be changed with gaming_grid list
     winning_positions.append([gaming_grid[j][i] for j in range(grid_size)])
-#diagonals
+
+#define winning positions for diagonals
 winning_positions.append([gaming_grid[i][i] for i in range(grid_size)]) 
 winning_positions.append([gaming_grid[i][grid_size - 1 - i] for i in range(grid_size)])
 
@@ -64,8 +66,8 @@ print(line)
 print("Press Enter to start the game...")
 input()
 
-#printing gaming grid using function
-print_gaming_grid_use = print_gaming_grid(gaming_grid)
+#print gaming grid, using function
+print_grid = print_gaming_grid(gaming_grid)
 
 #empty lists and variables
 placed_x = []
@@ -99,7 +101,7 @@ while True:
             print('wrong value, try again')  
     
     #print updated grid
-    print_gaming_grid_use = print_gaming_grid(gaming_grid)
+    print_grid = print_gaming_grid(gaming_grid)
 
     #checks if player have winning combination
     is_winning_combination = check_winning_combination(winning_positions, placed_x, grid_size)
@@ -114,6 +116,7 @@ while True:
         print('Draw!')
         break
 
+    #test prints
     #print(f'pos blocked {blocked_positions}')
     #print(f'blocked by player x {placed_x}')
     #print(f'winning pos {winning_positions}')
@@ -141,7 +144,7 @@ while True:
             print('wrong value, try again')
 
     #print updated grid
-    print_gaming_grid_use = print_gaming_grid(gaming_grid)
+    print_grid = print_gaming_grid(gaming_grid)
 
     #checks if player have winning combination
     is_winning_combination = check_winning_combination(winning_positions, placed_o, grid_size)
@@ -156,6 +159,7 @@ while True:
         print('Draw!')
         break
     
+    #test prints
     #print(f'pos blocked {blocked_positions}')
     #print(f'blocked by player o {placed_o}')
     #print(f'winning pos {winning_positions}')
