@@ -9,8 +9,8 @@ discord: .honzikovacesta
 def check_winning_combination(winning_positions, selected_positions, grid_size):
     for positions in winning_positions:
         is_inside = 0
-        for pos in positions:
-            if pos in selected_positions:
+        for position in positions:
+            if position in selected_positions:
                 is_inside += 1
                 if is_inside == grid_size:
                     return True
@@ -23,12 +23,12 @@ def print_gaming_grid(gaming_grid):
 
     print(grid_line)
     for row in gaming_grid:
-        print("|" + "|".join(f"{number:^3}" for number in row) + "|")
+        print("|" + "|".join(f"{char:^3}" for char in row) + "|")
         print(grid_line)
 
 
-#gaming grid of chosen size 3x3, 4x4 etc
-grid_size = 3
+#gaming grid of chosen size
+grid_size = 3 # 3 --> 3x3, 4 --> 4x4, 5 -->5x5 etc
 gaming_grid = []
 i = 0
 for n in range(grid_size):
@@ -71,25 +71,25 @@ print_gaming_grid_use = print_gaming_grid(gaming_grid)
 placed_x = []
 placed_o = []
 blocked_positions = []
-max_value = grid_size**2
-draw = 0
+grid_len = grid_size**2
+max_index = grid_len - 1
 
 while True:
 
     #PLAYER - x -
-    while True:   
+    while True:
+        #player input and handling exceptions
         try:
             mark_x = int(input('Player X turn, choose position with number: '))
             if mark_x in blocked_positions:
                 print('blocked position, try again')
             elif mark_x < 0:
                 print('negative value, try again')
-            elif mark_x > max_value - 1:
+            elif mark_x > max_index:
                 print('number out of interval, try again')
             else:
                 blocked_positions.append(mark_x)
                 placed_x.append(mark_x)
-                draw += 1
                 for row in gaming_grid:
                     if mark_x in row:
                         index = row.index(mark_x)
@@ -100,34 +100,38 @@ while True:
     
     #print updated grid
     print_gaming_grid_use = print_gaming_grid(gaming_grid)
-    
+
+    #checks if player have winning combination
     is_winning_combination = check_winning_combination(winning_positions, placed_x, grid_size)
     
-    if draw == max_value:
-        print('Draw!')
-        break
+    #checks if there is a winner
     if is_winning_combination:
         print('X is the winner!')
         break
-   
+
+    #checks if draw
+    if len(blocked_positions) == grid_len:
+        print('Draw!')
+        break
+
     #print(f'pos blocked {blocked_positions}')
     #print(f'blocked by player x {placed_x}')
     #print(f'winning pos {winning_positions}')
 
     #PLAYER - o -
-    while True:   
+    while True:
+        #player input and handling exceptions   
         try:
             mark_o = int(input('Player O turn, choose position with number: '))
             if mark_o in blocked_positions:
                 print('blocked position, try again')
             elif mark_o < 0:
                 print('negative value, try again')
-            elif mark_o > max_value - 1:
+            elif mark_o > max_index:
                 print('number out of interval, try again')
             else:
                 blocked_positions.append(mark_o)
                 placed_o.append(mark_o)
-                draw += 1
                 for row in gaming_grid:
                     if mark_o in row:
                         index = row.index(mark_o)
@@ -135,16 +139,21 @@ while True:
                 break
         except ValueError:
             print('wrong value, try again')
- 
+
     #print updated grid
     print_gaming_grid_use = print_gaming_grid(gaming_grid)
-    
+
+    #checks if player have winning combination
     is_winning_combination = check_winning_combination(winning_positions, placed_o, grid_size)
-    if draw == max_value:
-        print('Draw!')
-        break
+
+    #checks if there is a winner
     if is_winning_combination:
         print('O is the winner!')
+        break
+
+    #checks if draw
+    if len(blocked_positions) == grid_len:
+        print('Draw!')
         break
     
     #print(f'pos blocked {blocked_positions}')
