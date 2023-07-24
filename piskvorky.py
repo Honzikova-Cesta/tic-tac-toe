@@ -1,5 +1,5 @@
 """
-projekt_2.py: druhý projekt do Engeto Online Python Akademie
+piskvorky.py: druhý projekt do Engeto Online Python Akademie
 author: Jan Procházka
 email: jan.prochazka92@gmail.com
 discord: .honzikovacesta
